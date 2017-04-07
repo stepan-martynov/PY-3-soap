@@ -1,4 +1,5 @@
 import osa
+import re
 
 ###
 # 1) Дано: Семь значений температур по Фаренгейту.Файл temps.txt.
@@ -34,8 +35,6 @@ def avg_temperature_from_list(temperature_list):
 
 URL4 = 'http://fx.currencysystem.com/webservices/CurrencyServer4.asmx?WSDL'
 
-client4 = osa.client.Client(URL4)
-
 """
 fromCurrency" type="s:string"/>
 <s:element minOccurs="0" maxOccurs="1" name="toCurrency" type="s:string"/>
@@ -43,11 +42,19 @@ fromCurrency" type="s:string"/>
 <s:element minOccurs="1" maxOccurs="1" name="rounding" type="s:boolean"/>
 """
 
-response4 = client4.service.ConvertToNum(toCurrency='USD', fromCurrency='RUB', amount=100.00, rounding=True)
 
-# print(response4)
-print(100.00 / float(response4))
+def read_currencies():
+    with open('Homework/currencies.txt') as f:
+        f_as_string = f.read()
+        currencies_list = re.findall(r'(\w+):\s(\w+)\s(\w+)\n', f_as_string)
+        return currencies_list
 
+
+def cost_of_travel(currencies_list):
+    for _ in currencies_list:
+        client4 = osa.client.Client(URL4)
+        response4 = client4.service.ConvertToNum(toCurrency='RUB', fromCurrency=_[2], amount=_[1], rounding=True)
+        print('При путешествии в {} мы потратим {} рублей'.format(_[0].title(), response4))
 
 ###
 
@@ -75,7 +82,7 @@ print(response3.split(';'))
 ###
 def main():
     print(avg_temperature_from_list(read_temperature_from_file()))
-
+    cost_of_travel(read_currencies())
 
 if __name__ == '__main__':
     main()
