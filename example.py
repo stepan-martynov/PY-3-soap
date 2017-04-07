@@ -46,15 +46,15 @@ fromCurrency" type="s:string"/>
 def read_currencies():
     with open('Homework/currencies.txt') as f:
         f_as_string = f.read()
-        currencies_list = re.findall(r'(\w+):\s(\w+)\s(\w+)\n', f_as_string)
+        currencies_list = re.findall(r'(\w+)-(\w+):\s(\w+)\s(\w+)\n', f_as_string)
         return currencies_list
 
 
 def cost_of_travel(currencies_list):
     for _ in currencies_list:
         client4 = osa.client.Client(URL4)
-        response4 = client4.service.ConvertToNum(toCurrency='RUB', fromCurrency=_[2], amount=_[1], rounding=True)
-        print('При путешествии в {} мы потратим {} рублей'.format(_[0].title(), response4))
+        response4 = client4.service.ConvertToNum(toCurrency='RUB', fromCurrency=_[3], amount=_[2], rounding=True)
+        print('При путешествии из {} в {} мы потратим {} рубля(ей)'.format(_[0].title(), _[1].title(), int(response4)))
 
 ###
 
