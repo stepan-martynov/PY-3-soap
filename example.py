@@ -51,10 +51,12 @@ def read_currencies():
 
 
 def cost_of_travel(currencies_list):
+    travel_cost = 0
     for _ in currencies_list:
         client2 = osa.client.Client(URL4)
         response4 = client2.service.ConvertToNum(toCurrency='RUB', fromCurrency=_[2], amount=_[1], rounding=True)
-        print('При путешествии {} мы потратим {} рубля(ей)'.format(_[0].title(), int(response4 + 1)))
+        travel_cost += response4
+    print('Полные затраты на путешествие составят – {} руб'.format(int(travel_cost + 1)))
 
 
 ###
@@ -70,16 +72,17 @@ def read_travel():
     with open('Homework/travel.txt') as f:
         f_as_string = f.read().replace(',', '')
         travel_list = re.findall(r'(\w+-\w+):\s(\w+\w+.\w+)\s(\w+)', f_as_string)
-        # print(travel_list)
         return travel_list
 
 
 def travel_length(travel_list):
+    all_travel_length = 0
     for _ in travel_list:
         client3 = osa.client.Client(URL3)
         response3 = client3.service.ChangeLengthUnit(LengthValue=_[1], fromLengthUnit='Miles',
                                                      toLengthUnit='Kilometers')
-        print('Расстояние {} составит {} киллометров.'.format(_[0], response3))
+        all_travel_length += response3
+    print('Весь путь составит: {} км'.format(all_travel_length))
 
 
 ##################
