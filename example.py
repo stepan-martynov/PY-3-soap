@@ -46,43 +46,50 @@ fromCurrency" type="s:string"/>
 def read_currencies():
     with open('Homework/currencies.txt') as f:
         f_as_string = f.read()
-        currencies_list = re.findall(r'(\w+)-(\w+):\s(\w+)\s(\w+)\n', f_as_string)
+        currencies_list = re.findall(r'(\w+-\w+):\s(\w+)\s(\w+)', f_as_string)
         return currencies_list
 
 
 def cost_of_travel(currencies_list):
     for _ in currencies_list:
-        client4 = osa.client.Client(URL4)
-        response4 = client4.service.ConvertToNum(toCurrency='RUB', fromCurrency=_[3], amount=_[2], rounding=True)
-        print('При путешествии из {} в {} мы потратим {} рубля(ей)'.format(_[0].title(), _[1].title(), int(response4)))
-
-###
-
-
-
-URL2 = 'http://www.webservicex.net/ConvertSpeed.asmx?WSDL'
-
-client2 = osa.client.Client(URL2)
-
-response2 = client2.service.ConvertSpeed(speed=121.25, FromUnit='milesPerhour', ToUnit='kilometersPerhour')
-
-print(response2)
-
-###
-
-URL3 = 'http://fx.currencysystem.com/webservices/CurrencyServer4.asmx?WSDL'
-
-client3 = osa.client.Client(URL3)
-
-response3 = client3.service.Currencies()
-
-print(response3.split(';'))
+        client2 = osa.client.Client(URL4)
+        response4 = client2.service.ConvertToNum(toCurrency='RUB', fromCurrency=_[2], amount=_[1], rounding=True)
+        print('При путешествии {} мы потратим {} рубля(ей)'.format(_[0].title(), int(response4 + 1)))
 
 
 ###
+
+# 3) Дано: Длина пути в милях, название пути. Файл travel.txt
+#    (Формат: “<название пути>: <длина в пути> <мера расстояния>”)
+#    Вопрос: Посчитать суммарное расстояние пути в километрах? Точность: .01 .
+
+URL3 = 'http://www.webservicex.net/length.asmx?WSDL'
+
+
+def read_travel():
+    with open('Homework/travel.txt') as f:
+        f_as_string = f.read().replace(',', '')
+        travel_list = re.findall(r'(\w+-\w+):\s(\w+\w+.\w+)\s(\w+)', f_as_string)
+        # print(travel_list)
+        return travel_list
+
+
+def travel_length(travel_list):
+    for _ in travel_list:
+        client3 = osa.client.Client(URL3)
+        response3 = client3.service.ChangeLengthUnit(LengthValue=_[1], fromLengthUnit='Miles',
+                                                     toLengthUnit='Kilometers')
+        print('Расстояние {} составит {} киллометров.'.format(_[0], response3))
+
+
+##################
+
 def main():
     print(avg_temperature_from_list(read_temperature_from_file()))
     cost_of_travel(read_currencies())
+    travel_list = read_travel()
+    travel_length(travel_list)
+
 
 if __name__ == '__main__':
     main()
